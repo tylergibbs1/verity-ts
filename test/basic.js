@@ -1,13 +1,21 @@
-const { VerityClient, AuthenticationError } = require('../dist/index.js');
+const { BackworkClient, VerityClient, AuthenticationError } = require('../dist/index.js');
+
+// Prefer the new variable but keep reading the old one: existing deployments still
+// export VERITY_API_KEY, and the keys it holds (vrt_ prefixed) remain valid.
+const apiKey = process.env.BACKWORK_API_KEY || process.env.VERITY_API_KEY;
 
 async function test() {
-  if (!process.env.VERITY_API_KEY) {
-    console.log('VERITY_API_KEY not set; skipping live API smoke checks.');
+  if (VerityClient !== BackworkClient) {
+    throw new Error('VerityClient must stay aliased to BackworkClient for existing consumers');
+  }
+
+  if (!apiKey) {
+    console.log('BACKWORK_API_KEY not set; skipping live API smoke checks.');
     console.log('✓ SDK structure is valid!');
     return;
   }
 
-  const client = new VerityClient(process.env.VERITY_API_KEY);
+  const client = new BackworkClient(apiKey);
 
   try {
     // Test health check
@@ -24,7 +32,7 @@ async function test() {
   } catch (error) {
     if (error instanceof AuthenticationError) {
       console.log('⚠ Code lookup requires valid API key:', error.message);
-      console.log('  Note: Get your API key from https://verity.backworkai.com/dashboard');
+      console.log('  Note: Get your API key from https://backworkhealth.com/dashboard');
     } else {
       console.error('✗ Code lookup failed:', error.message);
     }

@@ -1,25 +1,33 @@
-# Verity TypeScript SDK
+# Backwork TypeScript SDK
 
-Official TypeScript and JavaScript client for the [Verity API](https://verity.backworkai.com): Medicare coverage policies, medical code intelligence, prior authorization checks, claim validation, compliance review, and drug formulary evidence.
+Official TypeScript and JavaScript client for the [Backwork API](https://backworkhealth.com): Medicare coverage policies, medical code intelligence, prior authorization checks, claim validation, compliance review, and drug formulary evidence.
 
 The SDK is Promise-based, fully typed, and uses native `fetch` with an Effect-backed request layer for response parsing, timeouts, and safe retries.
 
 ## Installation
 
-The npm package publishes under the Backwork scope as `@backwork/verity-api`.
+This SDK is being republished under a new npm name. `@backwork/api` is **not on npm yet**, so today you install the existing package:
 
 ```bash
-npm install @backwork/verity-api
+npm install @backwork/verity-api@1.0.2
 ```
+
+Once the rename is published, the install becomes:
+
+```bash
+npm install @backwork/api
+```
+
+The code examples below use the new `@backwork/api` name. On `@backwork/verity-api@1.0.2`, change the import path back to `@backwork/verity-api` and use `VerityClient` / `VerityError`; everything else is identical.
 
 Requires Node.js 18 or newer, or a modern browser runtime with `fetch`.
 
 ## Quick Start
 
 ```typescript
-import { VerityClient } from '@backwork/verity-api';
+import { BackworkClient } from '@backwork/api';
 
-const client = new VerityClient(process.env.VERITY_API_KEY!);
+const client = new BackworkClient(process.env.BACKWORK_API_KEY!);
 
 const code = await client.lookupCode({
   code: '76942',
@@ -38,7 +46,17 @@ const priorAuth = await client.checkPriorAuth({
 console.log(priorAuth.data?.pa_required);
 ```
 
-Get an API key from the [Verity dashboard](https://verity.backworkai.com/dashboard).
+Get an API key from the [Backwork dashboard](https://backworkhealth.com/dashboard).
+
+### API keys and environment variables
+
+New keys are issued with a `bwk_live_` prefix. Keys issued with the older `vrt_live_` prefix are still valid and are not being revoked, so you do not need to rotate anything.
+
+The SDK takes the key as an argument and never reads the environment itself. If you are moving your own config from `VERITY_API_KEY` to `BACKWORK_API_KEY`, read the new name first and fall back to the old one until every deployment is switched over:
+
+```typescript
+const apiKey = process.env.BACKWORK_API_KEY ?? process.env.VERITY_API_KEY;
+```
 
 ## Core Workflows
 
@@ -129,8 +147,8 @@ import {
   NotFoundError,
   RateLimitError,
   ValidationError,
-  VerityError,
-} from '@backwork/verity-api';
+  BackworkError,
+} from '@backwork/api';
 
 try {
   const result = await client.lookupCode({ code: '76942' });
@@ -143,18 +161,33 @@ try {
     console.error('Resource not found');
   } else if (error instanceof RateLimitError) {
     console.error('Rate limit exceeded:', error.reset);
-  } else if (error instanceof VerityError) {
-    console.error('Verity API error:', error.message);
+  } else if (error instanceof BackworkError) {
+    console.error('Backwork API error:', error.message);
   }
 }
 ```
 
+## Migrating from `@backwork/verity-api`
+
+The old exported names still work. `VerityClient` and `VerityError` are exported as deprecated aliases of `BackworkClient` and `BackworkError`, and `VerityConfig` aliases `BackworkConfig`, so existing imports keep compiling. They will be removed in the first major release after the rename.
+
+| Old                                    | New                                 |
+| -------------------------------------- | ----------------------------------- |
+| `@backwork/verity-api`                 | `@backwork/api`                     |
+| `VerityClient`                         | `BackworkClient`                    |
+| `VerityError`                          | `BackworkError`                     |
+| `VerityConfig`                         | `BackworkConfig`                    |
+| `https://verity.backworkai.com/api/v1` | `https://backworkhealth.com/api/v1` |
+| `VERITY_API_KEY`                       | `BACKWORK_API_KEY`                  |
+
+`error.name` on the base error class changed from `'VerityError'` to `'BackworkError'`. If you branch on that string rather than using `instanceof`, update it.
+
 ## Configuration
 
 ```typescript
-const client = new VerityClient({
-  apiKey: process.env.VERITY_API_KEY!,
-  baseUrl: 'https://verity.backworkai.com/api/v1',
+const client = new BackworkClient({
+  apiKey: process.env.BACKWORK_API_KEY!,
+  baseUrl: 'https://backworkhealth.com/api/v1',
   timeout: 30_000,
 });
 ```
@@ -163,9 +196,9 @@ const client = new VerityClient({
 
 ```html
 <script type="module">
-  import { VerityClient } from 'https://cdn.skypack.dev/@backwork/verity-api';
+  import { BackworkClient } from 'https://cdn.skypack.dev/@backwork/api';
 
-  const client = new VerityClient('vrt_live_YOUR_API_KEY');
+  const client = new BackworkClient('bwk_live_YOUR_API_KEY');
   const result = await client.lookupCode({ code: '76942' });
   console.log(result.data);
 </script>
@@ -183,20 +216,20 @@ npm test
 
 ## Release
 
-The package publishes to npm as `@backwork/verity-api`.
+The package publishes to npm as `@backwork/api`.
 
-1. Configure npm Trusted Publishing for `backworkai/verity-ts`, workflow `release.yml`, environment `npm`, package `@backwork/verity-api`.
+1. Configure npm Trusted Publishing for `tylergibbs1/backwork-ts`, workflow `release.yml`, environment `npm`, package `@backwork/api`.
 2. Update `package.json` to the new version.
-3. Push a matching tag, for example `v1.0.2`.
+3. Push a matching tag, for example `v1.1.0`.
 4. The release workflow installs with `npm ci`, runs lint/format/build/tests, runs `npm pack --dry-run`, and publishes with npm provenance.
 
-`npm test` runs a structure check by default. Set `VERITY_API_KEY` to run live API smoke checks.
+`npm test` runs a structure check by default. Set `BACKWORK_API_KEY` to run live API smoke checks.
 
 ## Support
 
-- Documentation: https://verity.backworkai.com/docs
-- Issues: https://github.com/backworkai/verity-ts/issues
-- Email: support@verity.backworkai.com
+- Documentation: https://backworkhealth.com/docs
+- Issues: https://github.com/tylergibbs1/backwork-ts/issues
+- Email: support@backworkhealth.com
 
 ## License
 

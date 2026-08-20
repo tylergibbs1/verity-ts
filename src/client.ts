@@ -1,5 +1,5 @@
 import type {
-  VerityConfig,
+  BackworkConfig,
   ApiResponse,
   HealthStatus,
   CodeLookupData,
@@ -26,24 +26,24 @@ import type {
   DrugFormularyEvidence,
   PolicyChange,
 } from './types';
-import { VerityError } from './errors';
+import { BackworkError } from './errors';
 import { Effect, Schedule } from 'effect';
 
 type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-export class VerityClient {
+export class BackworkClient {
   private apiKey: string;
   private baseUrl: string;
   private timeout: number;
 
-  constructor(config: VerityConfig | string) {
+  constructor(config: BackworkConfig | string) {
     if (typeof config === 'string') {
       this.apiKey = config;
-      this.baseUrl = 'https://verity.backworkai.com/api/v1';
+      this.baseUrl = 'https://backworkhealth.com/api/v1';
       this.timeout = 30000;
     } else {
       this.apiKey = config.apiKey;
-      this.baseUrl = config.baseUrl || 'https://verity.backworkai.com/api/v1';
+      this.baseUrl = config.baseUrl || 'https://backworkhealth.com/api/v1';
       this.timeout = config.timeout || 30000;
     }
 
@@ -74,7 +74,7 @@ export class VerityClient {
       body?: Record<string, any>;
       headers?: Record<string, string>;
     } = {}
-  ): Effect.Effect<ApiResponse<T>, VerityError> {
+  ): Effect.Effect<ApiResponse<T>, BackworkError> {
     const url = new URL(`${this.baseUrl}${path}`);
 
     if (options.params) {
@@ -87,7 +87,7 @@ export class VerityClient {
 
     const headers: Record<string, string> = {
       Authorization: `Bearer ${this.apiKey}`,
-      'User-Agent': 'verity-ts/1.0.0',
+      'User-Agent': 'backwork-ts/1.0.0',
       ...options.headers,
     };
 
@@ -114,7 +114,7 @@ export class VerityClient {
           Effect.flatMap((data) =>
             response.ok
               ? Effect.succeed(data)
-              : Effect.fail(VerityError.fromResponse(response.status, data))
+              : Effect.fail(BackworkError.fromResponse(response.status, data))
           )
         )
       )
@@ -142,14 +142,14 @@ export class VerityClient {
     }
   }
 
-  private parseResponse<T>(response: Response): Effect.Effect<ApiResponse<T>, VerityError> {
+  private parseResponse<T>(response: Response): Effect.Effect<ApiResponse<T>, BackworkError> {
     return Effect.tryPromise({
       try: async () => {
         const text = await response.text();
         return text ? JSON.parse(text) : { success: true, data: undefined };
       },
       catch: (error) =>
-        new VerityError(
+        new BackworkError(
           error instanceof Error
             ? `Invalid JSON response: ${error.message}`
             : 'Invalid JSON response',
@@ -158,16 +158,16 @@ export class VerityClient {
     });
   }
 
-  private toNetworkError(error: unknown): VerityError {
-    if (error instanceof VerityError) {
+  private toNetworkError(error: unknown): BackworkError {
+    if (error instanceof BackworkError) {
       return error;
     }
 
     if (error instanceof Error && error.name === 'AbortError') {
-      return new VerityError('Request timeout', 'TIMEOUT');
+      return new BackworkError('Request timeout', 'TIMEOUT');
     }
 
-    return new VerityError(
+    return new BackworkError(
       error instanceof Error ? error.message : 'Unknown error',
       'NETWORK_ERROR'
     );

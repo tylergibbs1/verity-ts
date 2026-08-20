@@ -1,8 +1,8 @@
 /**
- * Common types for Verity SDK
+ * Common types for Backwork SDK
  */
 
-export interface VerityConfig {
+export interface BackworkConfig {
   apiKey: string;
   baseUrl?: string;
   timeout?: number;
@@ -565,3 +565,8 @@ export interface DrugFormularyEvidence {
   source_url: string | null;
   source_page: number | null;
 }
+
+// Kept for consumers of the published `@backwork/verity-api` package; drop with the
+// other deprecated aliases once the `@backwork/api` rename has shipped a major.
+/** @deprecated Renamed to `BackworkConfig`. */
+export type VerityConfig = BackworkConfig;
