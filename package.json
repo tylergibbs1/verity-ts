@@ -1,7 +1,7 @@
 {
-  "name": "@backwork/verity-api",
+  "name": "@backwork/api",
   "version": "1.0.2",
-  "description": "TypeScript/JavaScript SDK for Verity API - Medicare coverage policies and prior authorization",
+  "description": "TypeScript/JavaScript SDK for Backwork API - Medicare coverage policies and prior authorization",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.mjs",
@@ -28,23 +28,23 @@
     "prepublishOnly": "npm run lint && npm run format:check && npm run build"
   },
   "keywords": [
-    "verity",
+    "backwork",
     "medicare",
     "healthcare",
     "prior-authorization",
     "medical-codes",
     "coverage-policy"
   ],
-  "author": "Verity",
+  "author": "Backwork",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/backworkai/verity-ts.git"
+    "url": "git+https://github.com/tylergibbs1/backwork-ts.git"
   },
   "bugs": {
-    "url": "https://github.com/backworkai/verity-ts/issues"
+    "url": "https://github.com/tylergibbs1/backwork-ts/issues"
   },
-  "homepage": "https://verity.backworkai.com",
+  "homepage": "https://backworkhealth.com",
   "devDependencies": {
     "@eslint/js": "^9.38.0",
     "@types/node": "^20.19.30",

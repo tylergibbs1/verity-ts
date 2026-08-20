@@ -1,4 +1,4 @@
-export class VerityError extends Error {
+export class BackworkError extends Error {
   public readonly code?: string;
   public readonly hint?: string;
   public readonly details?: Record<string, any>;
@@ -12,14 +12,14 @@ export class VerityError extends Error {
     statusCode?: number
   ) {
     super(message);
-    this.name = 'VerityError';
+    this.name = 'BackworkError';
     this.code = code;
     this.hint = hint;
     this.details = details;
     this.statusCode = statusCode;
   }
 
-  static fromResponse(statusCode: number, data: any): VerityError {
+  static fromResponse(statusCode: number, data: any): BackworkError {
     const error = data.error || {};
     const message = error.message || 'Unknown error';
     const code = error.code;
@@ -36,33 +36,33 @@ export class VerityError extends Error {
       case 400:
         return new ValidationError(message, code, hint, details);
       default:
-        return new VerityError(message, code, hint, details, statusCode);
+        return new BackworkError(message, code, hint, details, statusCode);
     }
   }
 }
 
-export class AuthenticationError extends VerityError {
+export class AuthenticationError extends BackworkError {
   constructor(message: string, code?: string, hint?: string, details?: Record<string, any>) {
     super(message, code, hint, details, 401);
     this.name = 'AuthenticationError';
   }
 }
 
-export class ValidationError extends VerityError {
+export class ValidationError extends BackworkError {
   constructor(message: string, code?: string, hint?: string, details?: Record<string, any>) {
     super(message, code, hint, details, 400);
     this.name = 'ValidationError';
   }
 }
 
-export class NotFoundError extends VerityError {
+export class NotFoundError extends BackworkError {
   constructor(message: string, code?: string, hint?: string, details?: Record<string, any>) {
     super(message, code, hint, details, 404);
     this.name = 'NotFoundError';
   }
 }
 
-export class RateLimitError extends VerityError {
+export class RateLimitError extends BackworkError {
   public readonly limit?: number;
   public readonly remaining?: number;
   public readonly reset?: number;
@@ -83,3 +83,11 @@ export class RateLimitError extends VerityError {
     this.reset = reset;
   }
 }
+
+// `@backwork/verity-api` 1.0.2 is live on npm and consumers import `VerityError`
+// today, so the old name stays exported as an alias. Remove it in the first major
+// release published after the `@backwork/api` rename ships.
+/** @deprecated Renamed to `BackworkError`. */
+export const VerityError = BackworkError;
+/** @deprecated Renamed to `BackworkError`. */
+export type VerityError = BackworkError;
