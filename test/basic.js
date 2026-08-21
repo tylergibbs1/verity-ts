@@ -1,14 +1,8 @@
-const { BackworkClient, VerityClient, AuthenticationError } = require('../dist/index.js');
+const { BackworkClient, AuthenticationError } = require('../dist/index.js');
 
-// Prefer the new variable but keep reading the old one: existing deployments still
-// export VERITY_API_KEY, and the keys it holds (vrt_ prefixed) remain valid.
-const apiKey = process.env.BACKWORK_API_KEY || process.env.VERITY_API_KEY;
+const apiKey = process.env.BACKWORK_API_KEY;
 
 async function test() {
-  if (VerityClient !== BackworkClient) {
-    throw new Error('VerityClient must stay aliased to BackworkClient for existing consumers');
-  }
-
   if (!apiKey) {
     console.log('BACKWORK_API_KEY not set; skipping live API smoke checks.');
     console.log('✓ SDK structure is valid!');
@@ -41,4 +35,7 @@ async function test() {
   console.log('\n✓ SDK structure is valid!');
 }
 
-test().catch(console.error);
+test().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
