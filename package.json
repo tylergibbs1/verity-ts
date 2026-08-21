@@ -1,6 +1,6 @@
 {
   "name": "@backwork/api",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "TypeScript/JavaScript SDK for Backwork API - Medicare coverage policies and prior authorization",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

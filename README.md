@@ -6,19 +6,9 @@ The SDK is Promise-based, fully typed, and uses native `fetch` with an Effect-ba
 
 ## Installation
 
-This SDK is being republished under a new npm name. `@backwork/api` is **not on npm yet**, so today you install the existing package:
-
-```bash
-npm install @backwork/verity-api@1.0.2
-```
-
-Once the rename is published, the install becomes:
-
 ```bash
 npm install @backwork/api
 ```
-
-The code examples below use the new `@backwork/api` name. On `@backwork/verity-api@1.0.2`, change the import path back to `@backwork/verity-api` and use `VerityClient` / `VerityError`; everything else is identical.
 
 Requires Node.js 18 or newer, or a modern browser runtime with `fetch`.
 
@@ -50,12 +40,10 @@ Get an API key from the [Backwork dashboard](https://backworkhealth.com/dashboar
 
 ### API keys and environment variables
 
-New keys are issued with a `bwk_live_` prefix. Keys issued with the older `vrt_live_` prefix are still valid and are not being revoked, so you do not need to rotate anything.
-
-The SDK takes the key as an argument and never reads the environment itself. If you are moving your own config from `VERITY_API_KEY` to `BACKWORK_API_KEY`, read the new name first and fall back to the old one until every deployment is switched over:
+The SDK takes the key as an argument and never reads the environment itself. Read it from `BACKWORK_API_KEY` in your application configuration:
 
 ```typescript
-const apiKey = process.env.BACKWORK_API_KEY ?? process.env.VERITY_API_KEY;
+const apiKey = process.env.BACKWORK_API_KEY;
 ```
 
 ## Core Workflows
@@ -167,21 +155,6 @@ try {
 }
 ```
 
-## Migrating from `@backwork/verity-api`
-
-The old exported names still work. `VerityClient` and `VerityError` are exported as deprecated aliases of `BackworkClient` and `BackworkError`, and `VerityConfig` aliases `BackworkConfig`, so existing imports keep compiling. They will be removed in the first major release after the rename.
-
-| Old                                    | New                                 |
-| -------------------------------------- | ----------------------------------- |
-| `@backwork/verity-api`                 | `@backwork/api`                     |
-| `VerityClient`                         | `BackworkClient`                    |
-| `VerityError`                          | `BackworkError`                     |
-| `VerityConfig`                         | `BackworkConfig`                    |
-| `https://verity.backworkai.com/api/v1` | `https://backworkhealth.com/api/v1` |
-| `VERITY_API_KEY`                       | `BACKWORK_API_KEY`                  |
-
-`error.name` on the base error class changed from `'VerityError'` to `'BackworkError'`. If you branch on that string rather than using `instanceof`, update it.
-
 ## Configuration
 
 ```typescript
@@ -220,7 +193,7 @@ The package publishes to npm as `@backwork/api`.
 
 1. Configure npm Trusted Publishing for `tylergibbs1/backwork-ts`, workflow `release.yml`, environment `npm`, package `@backwork/api`.
 2. Update `package.json` to the new version.
-3. Push a matching tag, for example `v1.1.0`.
+3. Push a matching tag, for example `v2.0.0`.
 4. The release workflow installs with `npm ci`, runs lint/format/build/tests, runs `npm pack --dry-run`, and publishes with npm provenance.
 
 `npm test` runs a structure check by default. Set `BACKWORK_API_KEY` to run live API smoke checks.

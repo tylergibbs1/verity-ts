@@ -83,11 +83,3 @@ export class RateLimitError extends BackworkError {
     this.reset = reset;
   }
 }
-
-// `@backwork/verity-api` 1.0.2 is live on npm and consumers import `VerityError`
-// today, so the old name stays exported as an alias. Remove it in the first major
-// release published after the `@backwork/api` rename ships.
-/** @deprecated Renamed to `BackworkError`. */
-export const VerityError = BackworkError;
-/** @deprecated Renamed to `BackworkError`. */
-export type VerityError = BackworkError;
